@@ -19,7 +19,7 @@ def prelimCheck(post):
 		return False
 
 
-def calcReturn(ticker, date, strike, call):
+def calcReturn(ticker, date, strike, call, maxTime=1612563213):
 	"""
 	Return the result of an option trade
 	:param ticker:
@@ -31,6 +31,8 @@ def calcReturn(ticker, date, strike, call):
 	try:
 		if datetime(day=date.day, month=date.month, year=date.year).timestamp() <=0:
 			return None;
+		elif datetime(day=date.day, month=date.month, year=date.year).timestamp() > maxTime:
+			return ["Not Expired", "Active"];
 		data = yf.download(ticker.upper(), date.strftime("%Y-%m-%d"), (date + timedelta(days=1)).strftime("%Y-%m-%d"), progress=False)
 		if abs(strike - data["Close"][0]) > 100 and (abs(strike - data["Close"][0])/data["Close"][0] > 10 or abs(strike - data["Close"][0])/data["Close"][0] < .1):
 			return None;
@@ -62,7 +64,7 @@ def calcDate(date, postTime):
 	date = date.replace(".", ".")
 	date = ''.join(e for e in date if e.isalnum() or e == "/");
 	try:
-		monthStartList = ["ja", "fe", "ma", "ap", "jun", "jul", "au", "se", "oc", "no", "de"];
+		monthStartList = ["jan", "feb", "may", "apr", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 		if date.count("/") == 1:
 			date = date.split("/");
 			month = int(date[0]);
